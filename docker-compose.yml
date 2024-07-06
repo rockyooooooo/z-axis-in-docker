@@ -1,0 +1,61 @@
+version: "3.9"
+services:
+  frontend:
+    # TODO: prebuild the docker image
+    build:
+      context: ./client
+    container_name: z-axis_frontend
+    ports:
+      - "3000:3000"
+
+  backend:
+    # TODO: prebuild the docker image
+    build:
+      context: ./server
+    container_name: z-axis_backend
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+    ports:
+      - "5001:5001"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      /bin/sh -c "
+      npx sequelize-cli db:migrate &&
+      node index.js
+      "
+
+  db:
+    image: mariadb:10.4.19
+    container_name: z-axis_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    command: ['mysqld', '--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:5.1.0
+    container_name: z-axis_phpmyadmin
+    environment:
+      PMA_HOST: ${DB_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8081:80"
+
+volumes:
+  db_data:
