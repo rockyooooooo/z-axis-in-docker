@@ -18,6 +18,12 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_NAME=${DB_NAME}
+      - PORT=${SERVER_PORT}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - SALTROUNDS=${CRYPTO_SALTROUNDS}
+      - CRYPTO_ALGORITHM=${CRYPTO_ALGORITHM}
+      - CRYPTO_KEY=${CRYPTO_KEY}
+      - CRYPTO_IV=${CRYPTO_IV}
     ports:
       - "5001:5001"
     depends_on:

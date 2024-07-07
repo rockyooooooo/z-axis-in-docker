@@ -11,13 +11,6 @@ if [ ! -d server ]; then
   git clone https://github.com/rockyooooooo/final-project-Z-axis-backend.git -b dev server
 fi
 
-# copy .env file
-if [ -f .env.backend ]; then
-  cp .env.backend server/.env
-else
-  cp .env.backend.example server/.env
-fi
-
 # run docker-compose
 docker-compose up -d --build
 echo "Go visit http://localhost:3000"
