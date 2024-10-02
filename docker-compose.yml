@@ -6,7 +6,10 @@ services:
       context: ./client
     container_name: z-axis_frontend
     ports:
-      - "3000:3000"
+      - "3000:80"
+    # NOTE this is not working, need to add .env in client.
+    # environment:
+    #   REACT_APP_SERVER_HOST: ${SERVER_HOST}
 
   backend:
     # TODO: prebuild the docker image
@@ -21,6 +24,7 @@ services:
       - PORT=${SERVER_PORT}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - SALTROUNDS=${CRYPTO_SALTROUNDS}
+      - GUEST_TOKEN_LENGTH=${GUEST_TOKEN_LENGTH}
       - CRYPTO_ALGORITHM=${CRYPTO_ALGORITHM}
       - CRYPTO_KEY=${CRYPTO_KEY}
       - CRYPTO_IV=${CRYPTO_IV}
@@ -29,11 +33,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: >
-      /bin/sh -c "
-      npx sequelize-cli db:migrate &&
-      node index.js
-      "
+    # command: >
+    #   /bin/sh -c "
+    #   npx sequelize-cli db:migrate &&
+    #   node index.js
+    #   "
 
   db:
     image: mariadb:10.4.19
